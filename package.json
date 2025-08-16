@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "bun --watch run index.ts",
+    "start": "bun --watch run src/index.ts",
     "build": "tsc index.ts --outDir dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,7 +13,9 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "openai": "^5.12.2"
