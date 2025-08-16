@@ -7,11 +7,11 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "nodenext",
-    "target": "esnext",
+    "module": "NodeNext",
+    "target": "ES2020",
     "types": [],
     // For nodejs:
-    // "lib": ["esnext"],
+    "lib": ["ESNext"],
     // "types": ["node"],
     // and npm install -D @types/node
 
@@ -40,5 +40,8 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
+    // Added to fix CommonJS import issue
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   }
 }
