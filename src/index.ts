@@ -10,9 +10,6 @@ app.post("/api/chat", async (req: express.Request, res) => {
     const newMessage = req.body.message;
     const persona = req.body.persona;
 
-    console.log("Received message:", newMessage);
-    console.log("Received persona:", persona);
-
     if (!persona || (persona !== "kalph-chill" && persona !== "kalph-work")) {
       return res.status(400).json({ error: "Invalid persona specified" });
     }
