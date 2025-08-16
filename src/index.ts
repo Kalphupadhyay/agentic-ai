@@ -5,7 +5,13 @@ import { limiter } from "./utils/rate-limit.js";
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://kalph-ai-chat-front-t6tu.vercel.app",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(limiter);
 app.post("/api/chat", async (req: express.Request, res) => {
   try {
