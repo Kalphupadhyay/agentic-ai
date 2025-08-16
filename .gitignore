@@ -6,7 +6,7 @@ node_modules/
 bun.lockb
 
 # TypeScript build output
-dist/
+
 build/
 out/
 
