@@ -1,10 +1,12 @@
 import express from "express";
 import { chatMethod } from "./prompting.js";
 import cors from "cors";
+import { limiter } from "./utils/rate-limit.js";
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(limiter);
 app.post("/api/chat", async (req: express.Request, res) => {
   try {
     const newMessage = req.body.message;
@@ -13,7 +15,6 @@ app.post("/api/chat", async (req: express.Request, res) => {
     if (!persona || (persona !== "kalph-chill" && persona !== "kalph-work")) {
       return res.status(400).json({ error: "Invalid persona specified" });
     }
-    console.log("Received message for persona:", newMessage);
     if (!newMessage || typeof newMessage !== "string") {
       return res.status(400).json({ error: "Invalid message format" });
     }

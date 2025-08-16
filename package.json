@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "bun --watch run src/index.ts",
-    "build": "tsc index.ts --outDir dist",
+    "dev": "bun --watch run src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc --project tsconfig.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -18,6 +19,7 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
     "openai": "^5.12.2"
   }
 }
