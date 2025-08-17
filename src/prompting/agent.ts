@@ -1,11 +1,16 @@
 import { OpenAI } from "openai";
 import { ChatCompletionMessageParam } from "openai/resources";
+import { downloadWebsite } from "./pupet.js";
+import { openHtmlFile } from "../tools.js";
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const availableTools = {};
+const availableTools = {
+  downloadWebsite: downloadWebsite,
+  openHtmlFile: openHtmlFile,
+};
 
 const systemPrompt = ` 
 
@@ -32,19 +37,21 @@ const systemPrompt = `
     { "step": "START | THINK | TOOL | OBSERVE | OUTPUT", "content": "string" , input:"string", tool_name:"string" }
 
      Example:
-    User: Give me the weather of Jaipur
-    ASSISTANT: { "step": "START", "content": "The user wants me to scrape a website" } 
-    ASSISTANT: { "step": "THINK", "content": "Let me check my data for weather of Jaipur" }
-    ASSISTANT: { "step": "THINK", "content": "Let me See if there is any tool available to get city data"}
-    ASSISTANT: { "step": "THINK", "content": "I see there is a tool getWeatherbyCity(city: string) which returns city data user is requesting"}
-    ASSISTANT: { "step": "TOOL", "input":"patiala","tool_name":"getWeatherbyCity"}
-    DEVELOPER: { "step": "OBSERVE", "content":"The weather in Jaipur is sunny with a temperature of 2 degrees Celsius."}
-    ASSISTANT: { "step": "THINK", "content": "I got the weather of Jaipur"}
-    ASSISTANT: { "step": "OUTPUT", "content": "current weather of Jaipur is sunny please take care of water"} 
+    User: Clone this website https://hiteshchoudhary.com/
+    ASSISTANT: { "step": "START", "content": "The user wants me to clone a website" } 
+    ASSISTANT: { "step": "THINK", "content": "let me check if there is any tool to clone a website" }
+    ASSISTANT: { "step": "THINK", "content": "I see there is a tool downloadWebsite(url: string) which downloads a website into the downloaded_website folder" }
+    ASSISTANT: { "step": "TOOL", "input":"https://hiteshchoudhary.com/","tool_name":"downloadWebsite"}
+    DEVELOPER: { "step": "OBSERVE", "content":"Website downloaded to ../../downloaded_website" }
+    ASSISTANT: { "step": "THINK", "content": "I have cloned the website"}
+    ASSISTANT: { "step": "THINK", "content": "Let me see if there is any tool to open the HTML file" }
+    ASSISTANT: { "step": "TOOL", "input":"./downloaded_website/index.html","tool_name":"openHtmlFile"}
+    DEVELOPER: { "step": "OBSERVE", "content":"File opened successfully" }
+    ASSISTANT: { "step": "OUTPUT", "content": "I have opened the file for you" } 
 
     `;
 
-export async function chatWithChainOfThought() {
+export async function webisteAgent() {
   const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
@@ -52,7 +59,7 @@ export async function chatWithChainOfThought() {
     },
     {
       role: "user",
-      content: "Create todo application inside test folder ",
+      content: "Clone this website https://hiteshchoudhary.com/",
     },
   ];
 
@@ -86,14 +93,24 @@ export async function chatWithChainOfThought() {
         });
       }
 
-      //   let result = await availableTools[
-      //     parsedContent.tool_name as keyof typeof availableTools
-      //   ](parsedContent.input);
+      try {
+        let result = await availableTools[
+          parsedContent.tool_name as keyof typeof availableTools
+        ](parsedContent.input);
 
-      //   messages.push({
-      //     role: "developer",
-      //     content: result as string,
-      //   });
+        console.log(`🔍`, `Tool output: ${result}`);
+
+        messages.push({
+          role: "developer",
+          content: (result as string) || "Tool executed successfully",
+        });
+      } catch (error) {
+        console.error(`❌`, `Error executing tool: ${error}`);
+        messages.push({
+          role: "developer",
+          content: `Error executing tool: ${error}`,
+        });
+      }
 
       continue;
     }

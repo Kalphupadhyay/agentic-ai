@@ -2,7 +2,6 @@ import puppeteer from "puppeteer";
 import fs from "fs";
 import path from "path";
 import axios from "axios";
-import * as cheerio from "cheerio";
 
 export async function downloadWebsite(
   url: string,
@@ -66,24 +65,13 @@ export async function downloadWebsite(
     await downloadFile(js, jsDir);
   }
 
+  // Download images
   for (const img of resources.imgs) {
-    if (!img) continue;
-    let imgUrl = img;
-    // If img is a relative URL, resolve it using the page URL
-    if (!/^https?:\/\//i.test(img)) {
-      try {
-        imgUrl = new URL(img, url).href;
-      } catch {
-        console.log(`Skipping invalid image URL: ${img}`);
-        continue;
-      }
-    }
-    await downloadFile(imgUrl, imgDir);
+    await downloadFile(img, imgDir);
   }
 
   await browser.close();
-  fixCssLinks(path.join(outputDir, "index.html"), cssDir);
-  fixImageLinks(path.join(outputDir, "index.html"));
+  await fixCssLinks(path.join(outputDir, "index.html"), cssDir);
   return `Website downloaded to ${outputDir}`;
 }
 
@@ -107,22 +95,4 @@ function fixCssLinks(htmlFilePath: string, cssFolder: string) {
   console.log("CSS links updated successfully!");
 }
 
-function fixImageLinks(htmlFilePath: string) {
-  if (!fs.existsSync(htmlFilePath)) {
-    console.error("HTML file not found:", htmlFilePath);
-    return;
-  }
-
-  let html = fs.readFileSync(htmlFilePath, "utf8");
-  const $ = cheerio.load(html);
-
-  $("img").each((_, img) => {
-    let src = $(img).attr("src");
-    if (src && src.startsWith("/images/")) {
-      $(img).attr("src", `.${src}`);
-    }
-  });
-
-  fs.writeFileSync(htmlFilePath, $.html(), "utf8");
-  console.log("Image links updated successfully!");
-}
+downloadWebsite("https://hiteshchoudhary.com/");

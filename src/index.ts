@@ -1,7 +1,3 @@
-import {
-  chatWithChainOfThought,
-  getWeatherbyCity,
-  executeCommand,
-} from "./prompting/chainOfThought.js";
+import { webisteAgent } from "./prompting/agent.js";
 
-chatWithChainOfThought();
+webisteAgent();
