@@ -1,30 +1,11 @@
 import { OpenAI } from "openai";
 import { ChatCompletionMessageParam } from "openai/resources";
-import { exec } from "child_process";
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export async function getWeatherbyCity(city: string): Promise<string> {
-  return `The weather in ${city} is sunny with a temperature of 100 degrees Celsius.`;
-}
-
-const availableTools = {
-  getWeatherbyCity: getWeatherbyCity,
-  executeCommand: executeCommand,
-};
-
-export function executeCommand(cmd: string) {
-  return new Promise((res, reject) => {
-    exec(cmd, (err, data) => {
-      if (err) {
-        res(`Error running command ${err}`);
-      }
-      return res(`executed ${cmd} successfully ${data}`);
-    });
-  });
-}
+const availableTools = {};
 
 const systemPrompt = ` 
 
@@ -52,7 +33,7 @@ const systemPrompt = `
 
      Example:
     User: Give me the weather of Jaipur
-    ASSISTANT: { "step": "START", "content": "The user wants me to find weather of Jaipur" } 
+    ASSISTANT: { "step": "START", "content": "The user wants me to scrape a website" } 
     ASSISTANT: { "step": "THINK", "content": "Let me check my data for weather of Jaipur" }
     ASSISTANT: { "step": "THINK", "content": "Let me See if there is any tool available to get city data"}
     ASSISTANT: { "step": "THINK", "content": "I see there is a tool getWeatherbyCity(city: string) which returns city data user is requesting"}
@@ -105,14 +86,14 @@ export async function chatWithChainOfThought() {
         });
       }
 
-      let result = await availableTools[
-        parsedContent.tool_name as keyof typeof availableTools
-      ](parsedContent.input);
+      //   let result = await availableTools[
+      //     parsedContent.tool_name as keyof typeof availableTools
+      //   ](parsedContent.input);
 
-      messages.push({
-        role: "developer",
-        content: result as string,
-      });
+      //   messages.push({
+      //     role: "developer",
+      //     content: result as string,
+      //   });
 
       continue;
     }
